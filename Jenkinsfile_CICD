@@ -1,10 +1,14 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> b618d01754b2c63ee9ef65f3a29f2c26a274c3c4
 pipeline {
     agent any
     
     tools {
         nodejs 'nodejs23'
     }
+<<<<<<< HEAD
 
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
@@ -13,6 +17,17 @@ pipeline {
         stage('Git Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/jaiswaladi246/3-Tier-DevSecOps-Mega-Project.git'
+=======
+    
+    // environment {
+    //     SCANNER_HOME = tool 'sonar-scanner'
+    // }
+
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git branch: 'deploy-to-dev-k8', url: 'https://github.com/rks007/DevSecOps-Project.git'
+>>>>>>> b618d01754b2c63ee9ef65f3a29f2c26a274c3c4
             }
         }
         
@@ -32,13 +47,18 @@ pipeline {
             }
         }
         
+<<<<<<< HEAD
         stage('GitLeaks Scan') {
+=======
+        stage('Gitleaks Scan') {
+>>>>>>> b618d01754b2c63ee9ef65f3a29f2c26a274c3c4
             steps {
                 sh 'gitleaks detect --source ./client --exit-code 1'
                 sh 'gitleaks detect --source ./api --exit-code 1'
             }
         }
         
+<<<<<<< HEAD
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonar') {
@@ -54,39 +74,81 @@ pipeline {
                 }
             }
         }
+=======
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //       withSonarQubeEnv('sonar') {
+        //             sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=NodeJS-Project \
+        //             -Dsonar.projectKey=NodeJS-Project '''
+        //       } 
+        //     }
+        // }
+        
+        // stage('Quality Gate Check') {
+        //     steps {
+        //         timeout(5) {
+        //             waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+        //         }
+        //     }
+        // }
+        
+>>>>>>> b618d01754b2c63ee9ef65f3a29f2c26a274c3c4
         stage('Trivy FS Scan') {
             steps {
                 sh 'trivy fs --format table -o fs-report.html .'
             }
         }
         
+<<<<<<< HEAD
         stage('Build-Tag & Push Backend Docker Image') {
+=======
+        
+        stage('Build-Tag & Push backend Docker Image') {
+>>>>>>> b618d01754b2c63ee9ef65f3a29f2c26a274c3c4
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred') {
                         dir('api') {
+<<<<<<< HEAD
                             sh 'docker build -t adijaiswal/backend:latest .'
                             sh 'trivy image --format table -o backend-image-report.html adijaiswal/backend:latest '
                             sh 'docker push adijaiswal/backend:latest'
                            
+=======
+                            sh 'docker build -t rks007/backend:latest .'
+                            sh 'trivy image --format table -o backend-image-report.html rks007/backend:latest'
+                            sh 'docker push rks007/backend:latest'
+>>>>>>> b618d01754b2c63ee9ef65f3a29f2c26a274c3c4
                         }
                     }
                 }
             }
+<<<<<<< HEAD
         }  
             
+=======
+        }
+        
+>>>>>>> b618d01754b2c63ee9ef65f3a29f2c26a274c3c4
         stage('Build-Tag & Push Frontend Docker Image') {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred') {
                         dir('client') {
+<<<<<<< HEAD
                             sh 'docker build -t adijaiswal/frontend:latest .'
                             sh 'trivy image --format table -o frontend-image-report.html adijaiswal/frontend:latest '
                             sh 'docker push adijaiswal/frontend:latest'
+=======
+                            sh 'docker build -t rks007/frontend:latest .'
+                            sh 'trivy image --format table -o frontend-image-report.html rks007/frontend:latest'
+                            sh 'docker push rks007/frontend:latest'
+>>>>>>> b618d01754b2c63ee9ef65f3a29f2c26a274c3c4
                         }
                     }
                 }
             }
+<<<<<<< HEAD
              
         }  
         
@@ -109,10 +171,23 @@ pipeline {
                         sh 'kubectl apply -f k8s-prod/frontend.yaml -n prod'
                         sh 'kubectl apply -f k8s-prod/ci.yaml'
                         sh 'kubectl apply -f k8s-prod/ingress.yaml -n prod'
+=======
+        }
+        
+        stage('K8-Deploy') {
+            steps {
+                script {
+                    withKubeConfig(caCertificate: '', clusterName: 'mega-project', contextName: '', credentialsId: 'k8-token', namespace: 'dev', restrictKubeConfigAccess: false, serverUrl: 'https://DA0274CD5B137B8391CD23434C08703C.gr7.eu-west-1.eks.amazonaws.com') {
+                        sh 'kubectl apply -f k8s-dev/sc.yaml -n dev'
+                        sh 'kubectl apply -f k8s-dev/mysql.yaml -n dev'
+                        sh 'kubectl apply -f k8s-dev/backend.yaml -n dev'
+                        sh 'kubectl apply -f k8s-dev/frontend.yaml -n dev'
+>>>>>>> b618d01754b2c63ee9ef65f3a29f2c26a274c3c4
                         sleep 30
                     }
                 }
             }
+<<<<<<< HEAD
         }
         
         stage('Verify Deployment To Prod') {
@@ -128,5 +203,21 @@ pipeline {
             }
         }
             
+=======
+        }  
+        
+        stage('Verify-K8-Deploy') {
+            steps {
+                script {
+                    withKubeConfig(caCertificate: '', clusterName: 'mega-project', contextName: '', credentialsId: 'k8-token', namespace: 'dev', restrictKubeConfigAccess: false, serverUrl: 'https://DA0274CD5B137B8391CD23434C08703C.gr7.eu-west-1.eks.amazonaws.com') {
+                        sh 'kubectl get pods -n dev'
+                        sh 'kubectl get svc -n dev'
+                    }
+                }
+            }
+        }  
+        
+        
+>>>>>>> b618d01754b2c63ee9ef65f3a29f2c26a274c3c4
     }
 }

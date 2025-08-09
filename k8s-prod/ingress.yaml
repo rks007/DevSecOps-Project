@@ -47,5 +47,5 @@ spec:
   tls:
     - hosts:
         - devops.rishabhsingh007.com
-        - www.devops.rishabhsingh007.com
+        # - www.devops.rishabhsingh007.com
       secretName: rks007-co-tls
